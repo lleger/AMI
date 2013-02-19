@@ -10,4 +10,6 @@
 
 @interface CameraViewController : UIViewController
 
+@property (nonatomic, strong) IBOutlet UILabel *motionData;
+
 @end

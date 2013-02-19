@@ -14,6 +14,8 @@
 
 @implementation CameraViewController
 
+@synthesize motionData;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
