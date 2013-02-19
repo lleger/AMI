@@ -7,9 +7,23 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreMotion/CoreMotion.h>
+
+typedef enum {
+    DirectionForward = 0,
+    DirectionReverse,
+    DirectionRight,
+    DirectionLeft
+} DirectionCommand;
 
 @interface CameraViewController : UIViewController
 
 @property (nonatomic, strong) IBOutlet UILabel *motionData;
+@property (nonatomic, strong) IBOutlet UILabel *commandLabel;
+@property (nonatomic, strong) CMMotionManager *motionManager;
+
+- (void)updateMotionData;
+- (void)updateLabelWithMotionDataWithRotationRate:(CMRotationRate)rotationRate andAttitude:(CMAttitude*)attitude;
+- (void)changeDirection:(DirectionCommand)command;
 
 @end
