@@ -1,18 +1,18 @@
 //
-//  ViewController.m
+//  CameraViewController.m
 //  AMI
 //
 //  Created by Logan Leger on 2/18/13.
 //  Copyright (c) 2013 Logan Leger. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "CameraViewController.h"
 
-@interface ViewController ()
+@interface CameraViewController ()
 
 @end
 
-@implementation ViewController
+@implementation CameraViewController
 
 - (void)viewDidLoad
 {

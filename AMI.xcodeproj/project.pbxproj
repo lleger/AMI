@@ -17,7 +17,7 @@
 		032ED8EA16D2CA1D00652D92 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 032ED8E916D2CA1D00652D92 /* Default@2x.png */; };
 		032ED8EC16D2CA1D00652D92 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 032ED8EB16D2CA1D00652D92 /* Default-568h@2x.png */; };
 		032ED8EF16D2CA1D00652D92 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 032ED8ED16D2CA1D00652D92 /* MainStoryboard.storyboard */; };
-		032ED8F216D2CA1D00652D92 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 032ED8F116D2CA1D00652D92 /* ViewController.m */; };
+		032ED8F216D2CA1D00652D92 /* CameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 032ED8F116D2CA1D00652D92 /* CameraViewController.m */; };
 		032ED8FA16D2CA1D00652D92 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 032ED8F916D2CA1D00652D92 /* SenTestingKit.framework */; };
 		032ED8FB16D2CA1D00652D92 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 032ED8D516D2CA1D00652D92 /* UIKit.framework */; };
 		032ED8FC16D2CA1D00652D92 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 032ED8D716D2CA1D00652D92 /* Foundation.framework */; };
@@ -50,8 +50,8 @@
 		032ED8E916D2CA1D00652D92 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		032ED8EB16D2CA1D00652D92 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		032ED8EE16D2CA1D00652D92 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
-		032ED8F016D2CA1D00652D92 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		032ED8F116D2CA1D00652D92 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		032ED8F016D2CA1D00652D92 /* CameraViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CameraViewController.h; sourceTree = "<group>"; };
+		032ED8F116D2CA1D00652D92 /* CameraViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraViewController.m; sourceTree = "<group>"; };
 		032ED8F816D2CA1D00652D92 /* AMITests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AMITests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		032ED8F916D2CA1D00652D92 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		032ED90116D2CA1D00652D92 /* AMITests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AMITests-Info.plist"; sourceTree = "<group>"; };
@@ -120,8 +120,8 @@
 				032ED8E416D2CA1D00652D92 /* AppDelegate.h */,
 				032ED8E516D2CA1D00652D92 /* AppDelegate.m */,
 				032ED8ED16D2CA1D00652D92 /* MainStoryboard.storyboard */,
-				032ED8F016D2CA1D00652D92 /* ViewController.h */,
-				032ED8F116D2CA1D00652D92 /* ViewController.m */,
+				032ED8F016D2CA1D00652D92 /* CameraViewController.h */,
+				032ED8F116D2CA1D00652D92 /* CameraViewController.m */,
 				032ED8DC16D2CA1D00652D92 /* Supporting Files */,
 			);
 			path = AMI;
@@ -272,7 +272,7 @@
 			files = (
 				032ED8E216D2CA1D00652D92 /* main.m in Sources */,
 				032ED8E616D2CA1D00652D92 /* AppDelegate.m in Sources */,
-				032ED8F216D2CA1D00652D92 /* ViewController.m in Sources */,
+				032ED8F216D2CA1D00652D92 /* CameraViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
