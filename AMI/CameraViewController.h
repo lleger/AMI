@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
+#import "GCDAsyncSocket.h"
 
 typedef enum {
     DirectionForward = 0,
@@ -16,14 +17,17 @@ typedef enum {
     DirectionLeft
 } DirectionCommand;
 
-@interface CameraViewController : UIViewController
+@interface CameraViewController : UIViewController <GCDAsyncSocketDelegate>
 
 @property (nonatomic, strong) IBOutlet UILabel *motionData;
 @property (nonatomic, strong) IBOutlet UILabel *commandLabel;
 @property (nonatomic, strong) CMMotionManager *motionManager;
+@property (nonatomic, strong) GCDAsyncSocket *socket;
+@property (nonatomic, assign) DirectionCommand currentDirection;
 
 - (void)updateMotionData;
 - (void)updateLabelWithMotionDataWithRotationRate:(CMRotationRate)rotationRate andAttitude:(CMAttitude*)attitude;
 - (void)changeDirection:(DirectionCommand)command;
+- (void)sendCommandToArduino:(DirectionCommand)command;
 
 @end

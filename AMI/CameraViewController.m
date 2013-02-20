@@ -22,13 +22,21 @@ const float kAttitudePitchLeftThreshold = 0.0;
 
 @implementation CameraViewController
 
-@synthesize motionData, motionManager, commandLabel;
+@synthesize motionData, motionManager, commandLabel, socket, currentDirection;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     motionManager = [(AppDelegate *)[[UIApplication sharedApplication] delegate] sharedManager];
+    
+    socket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+    NSError *err;
+    if (![socket connectToHost:@"192.168.1.99" onPort:80 error:&err]) // Asynchronous!
+    {
+        // If there was an error, it's likely something like "already connected" or "no delegate set"
+        NSLog(@"Socket error: %@", err);
+    }
 	// Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -57,7 +65,8 @@ const float kAttitudePitchLeftThreshold = 0.0;
     }
 }
 
-- (void)changeDirection:(DirectionCommand)command {
+- (void)changeDirection:(DirectionCommand)command
+{
     NSString *commandLabelText;
     
     switch (command) {
@@ -81,7 +90,55 @@ const float kAttitudePitchLeftThreshold = 0.0;
             break;
     }
     
-    commandLabel.text = commandLabelText;    
+    commandLabel.text = commandLabelText;
+    currentDirection = command;
+}
+
+- (void)sendCommandToArduino:(DirectionCommand)command
+{
+    NSString *commandString;
+    
+    switch (command) {
+        case DirectionForward:
+            commandString = @"F";
+            break;
+            
+        case DirectionReverse:
+            commandString = @"R";
+            break;
+            
+        case DirectionLeft:
+            commandString = @"L";
+            break;
+            
+        case DirectionRight:
+            commandString = @"R";
+            break;
+            
+        default:
+            break;
+    }
+    
+    commandString = [commandString stringByAppendingString:@"\n"];
+    
+    NSLog(@"Send command to arduino: %@", commandString);
+    
+    [socket writeData:[[commandString stringByAppendingString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:1];
+}
+
+- (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port
+{
+    NSLog(@"Did connect to host: %@:%i", host, port);
+}
+
+- (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err
+{
+    NSLog(@"Socket disconnected with error: %@", err);
+}
+
+- (void)socket:(GCDAsyncSocket *)sock didWriteDataWithTag:(long)tag
+{
+    NSLog(@"Did write data with tag: %li", tag);
 }
 
 - (void)updateMotionData
@@ -89,14 +146,18 @@ const float kAttitudePitchLeftThreshold = 0.0;
     CMRotationRate rotationRate = motionManager.deviceMotion.rotationRate;
     CMAttitude *attitude = motionManager.deviceMotion.attitude;
     
-    if (rotationRate.y <= -kRotationThreshold && attitude.roll < kAttitudeRollForwardThreshold) {
+    if (rotationRate.y <= -kRotationThreshold && attitude.roll < kAttitudeRollForwardThreshold && currentDirection != DirectionForward) {
         [self changeDirection:DirectionForward];
-    } else if (rotationRate.y >= kRotationThreshold && attitude.roll > kAttitudeRollReverseThreshold) {
+        [self sendCommandToArduino:DirectionForward];
+    } else if (rotationRate.y >= kRotationThreshold && attitude.roll > kAttitudeRollReverseThreshold && currentDirection != DirectionReverse) {
         [self changeDirection:DirectionReverse];
-    } else if (rotationRate.z < kRotationThreshold && attitude.pitch < kAttitudePitchRightThreshold) {
+        [self sendCommandToArduino:DirectionReverse];
+    } else if (rotationRate.z < kRotationThreshold && attitude.pitch < kAttitudePitchRightThreshold && currentDirection != DirectionRight) {
         [self changeDirection:DirectionRight];
-    } else if (rotationRate.z > kRotationThreshold && attitude.pitch > kAttitudePitchLeftThreshold) {
+        [self sendCommandToArduino:DirectionRight];
+    } else if (rotationRate.z > kRotationThreshold && attitude.pitch > kAttitudePitchLeftThreshold && currentDirection != DirectionLeft) {
         [self changeDirection:DirectionLeft];
+        [self sendCommandToArduino:DirectionLeft];
     }
     
     [self updateLabelWithMotionDataWithRotationRate:rotationRate andAttitude:attitude];
