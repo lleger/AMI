@@ -7,14 +7,16 @@
 //
 
 #import "CameraViewController.h"
-#import "AppDelegate.h"
+#import "MotionManager.h"
 
-const float kUpdateInterval = 0.01;
-const float kRotationThreshold = 1.0;
-const float kAttitudeRollForwardThreshold = 1.0;
-const float kAttitudeRollReverseThreshold = 2.0;
-const float kAttitudePitchRightThreshold = -0.1;
-const float kAttitudePitchLeftThreshold = 0.0;
+NSString *const kSocketHost                   = @"192.168.1.99";
+int       const kSocketPort                   = 80;
+float     const kUpdateInterval               = 0.01;
+float     const kRotationThreshold            = 1.0;
+float     const kAttitudeRollForwardThreshold = 1.0;
+float     const kAttitudeRollReverseThreshold = 2.0;
+float     const kAttitudePitchRightThreshold  = -0.1;
+float     const kAttitudePitchLeftThreshold   = 0.0;
 
 @interface CameraViewController ()
 
@@ -22,17 +24,15 @@ const float kAttitudePitchLeftThreshold = 0.0;
 
 @implementation CameraViewController
 
-@synthesize motionData, motionManager, commandLabel, socket, currentDirection;
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    motionManager = [(AppDelegate *)[[UIApplication sharedApplication] delegate] sharedManager];
+    _motionManager = [MotionManager sharedManager];
     
-    socket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+    _socket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
     NSError *err;
-    if (![socket connectToHost:@"192.168.1.99" onPort:80 error:&err]) // Asynchronous!
+    if (![_socket connectToHost:kSocketHost onPort:kSocketPort error:&err]) // Asynchronous!
     {
         // If there was an error, it's likely something like "already connected" or "no delegate set"
         NSLog(@"Socket error: %@", err);
@@ -49,9 +49,9 @@ const float kAttitudePitchLeftThreshold = 0.0;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    if ([motionManager isDeviceMotionAvailable]) {
-        [motionManager startDeviceMotionUpdates];
+
+    if ([_motionManager isDeviceMotionAvailable]) {
+        [_motionManager startDeviceMotionUpdates];
         [NSTimer scheduledTimerWithTimeInterval:kUpdateInterval target:self selector:@selector(updateMotionData) userInfo:nil repeats:YES];
     }
 }
@@ -60,8 +60,8 @@ const float kAttitudePitchLeftThreshold = 0.0;
 {
     [super viewDidDisappear:animated];
     
-    if ([motionManager isDeviceMotionActive]) {
-        [motionManager stopDeviceMotionUpdates];
+    if ([_motionManager isDeviceMotionActive]) {
+        [_motionManager stopDeviceMotionUpdates];
     }
 }
 
@@ -90,8 +90,8 @@ const float kAttitudePitchLeftThreshold = 0.0;
             break;
     }
     
-    commandLabel.text = commandLabelText;
-    currentDirection = command;
+    _commandLabel.text = commandLabelText;
+    _currentDirection = command;
 }
 
 - (void)sendCommandToArduino:(DirectionCommand)command
@@ -123,7 +123,7 @@ const float kAttitudePitchLeftThreshold = 0.0;
     
     NSLog(@"Send command to arduino: %@", commandString);
     
-    [socket writeData:[[commandString stringByAppendingString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:1];
+    [_socket writeData:[[commandString stringByAppendingString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:1];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port
@@ -143,19 +143,19 @@ const float kAttitudePitchLeftThreshold = 0.0;
 
 - (void)updateMotionData
 {
-    CMRotationRate rotationRate = motionManager.deviceMotion.rotationRate;
-    CMAttitude *attitude = motionManager.deviceMotion.attitude;
+    CMRotationRate rotationRate = _motionManager.deviceMotion.rotationRate;
+    CMAttitude *attitude = _motionManager.deviceMotion.attitude;
     
-    if (rotationRate.y <= -kRotationThreshold && attitude.roll < kAttitudeRollForwardThreshold && currentDirection != DirectionForward) {
+    if (rotationRate.y <= -kRotationThreshold && attitude.roll < kAttitudeRollForwardThreshold && _currentDirection != DirectionForward) {
         [self changeDirection:DirectionForward];
         [self sendCommandToArduino:DirectionForward];
-    } else if (rotationRate.y >= kRotationThreshold && attitude.roll > kAttitudeRollReverseThreshold && currentDirection != DirectionReverse) {
+    } else if (rotationRate.y >= kRotationThreshold && attitude.roll > kAttitudeRollReverseThreshold && _currentDirection != DirectionReverse) {
         [self changeDirection:DirectionReverse];
         [self sendCommandToArduino:DirectionReverse];
-    } else if (rotationRate.z < kRotationThreshold && attitude.pitch < kAttitudePitchRightThreshold && currentDirection != DirectionRight) {
+    } else if (rotationRate.z < kRotationThreshold && attitude.pitch < kAttitudePitchRightThreshold && _currentDirection != DirectionRight) {
         [self changeDirection:DirectionRight];
         [self sendCommandToArduino:DirectionRight];
-    } else if (rotationRate.z > kRotationThreshold && attitude.pitch > kAttitudePitchLeftThreshold && currentDirection != DirectionLeft) {
+    } else if (rotationRate.z > kRotationThreshold && attitude.pitch > kAttitudePitchLeftThreshold && _currentDirection != DirectionLeft) {
         [self changeDirection:DirectionLeft];
         [self sendCommandToArduino:DirectionLeft];
     }
@@ -165,7 +165,7 @@ const float kAttitudePitchLeftThreshold = 0.0;
 
 - (void)updateLabelWithMotionDataWithRotationRate:(CMRotationRate)rotationRate andAttitude:(CMAttitude *)attitude   
 {    
-    motionData.text = [NSString stringWithFormat:
+    _motionData.text = [NSString stringWithFormat:
                        @"Roll: %f\n"
                        @"Pitch: %f\n"
                        @"Yaw: %f\n"

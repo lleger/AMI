@@ -24,6 +24,7 @@
 		032ED90416D2CA1D00652D92 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 032ED90216D2CA1D00652D92 /* InfoPlist.strings */; };
 		032ED90716D2CA1D00652D92 /* AMITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 032ED90616D2CA1D00652D92 /* AMITests.m */; };
 		032ED91716D32F8900652D92 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 032ED91616D32F8900652D92 /* CoreMotion.framework */; };
+		03847A7116D57B8F00BD4A91 /* MotionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 03847A7016D57B8F00BD4A91 /* MotionManager.m */; };
 		13EE62A4953947F2B21E80CF /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D7C7F365090455AB4A7E2C4 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -61,6 +62,8 @@
 		032ED90516D2CA1D00652D92 /* AMITests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AMITests.h; sourceTree = "<group>"; };
 		032ED90616D2CA1D00652D92 /* AMITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AMITests.m; sourceTree = "<group>"; };
 		032ED91616D32F8900652D92 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		03847A6F16D57B8F00BD4A91 /* MotionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MotionManager.h; sourceTree = "<group>"; };
+		03847A7016D57B8F00BD4A91 /* MotionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MotionManager.m; sourceTree = "<group>"; };
 		4126FB05DAB04DBCA77F7E2E /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		7D7C7F365090455AB4A7E2C4 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -127,11 +130,11 @@
 		032ED8DB16D2CA1D00652D92 /* AMI */ = {
 			isa = PBXGroup;
 			children = (
+				03847A7316D57F6700BD4A91 /* Services */,
+				03847A7216D57F5F00BD4A91 /* Controllers */,
 				032ED8E416D2CA1D00652D92 /* AppDelegate.h */,
 				032ED8E516D2CA1D00652D92 /* AppDelegate.m */,
 				032ED8ED16D2CA1D00652D92 /* MainStoryboard.storyboard */,
-				032ED8F016D2CA1D00652D92 /* CameraViewController.h */,
-				032ED8F116D2CA1D00652D92 /* CameraViewController.m */,
 				032ED8DC16D2CA1D00652D92 /* Supporting Files */,
 			);
 			path = AMI;
@@ -168,6 +171,24 @@
 				032ED90216D2CA1D00652D92 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		03847A7216D57F5F00BD4A91 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				032ED8F016D2CA1D00652D92 /* CameraViewController.h */,
+				032ED8F116D2CA1D00652D92 /* CameraViewController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		03847A7316D57F6700BD4A91 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				03847A6F16D57B8F00BD4A91 /* MotionManager.h */,
+				03847A7016D57B8F00BD4A91 /* MotionManager.m */,
+			);
+			name = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -298,6 +319,7 @@
 				032ED8E216D2CA1D00652D92 /* main.m in Sources */,
 				032ED8E616D2CA1D00652D92 /* AppDelegate.m in Sources */,
 				032ED8F216D2CA1D00652D92 /* CameraViewController.m in Sources */,
+				03847A7116D57B8F00BD4A91 /* MotionManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

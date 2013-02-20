@@ -19,8 +19,8 @@ typedef enum {
 
 @interface CameraViewController : UIViewController <GCDAsyncSocketDelegate>
 
-@property (nonatomic, strong) IBOutlet UILabel *motionData;
-@property (nonatomic, strong) IBOutlet UILabel *commandLabel;
+@property (nonatomic, weak) IBOutlet UILabel *motionData;
+@property (nonatomic, weak) IBOutlet UILabel *commandLabel;
 @property (nonatomic, strong) CMMotionManager *motionManager;
 @property (nonatomic, strong) GCDAsyncSocket *socket;
 @property (nonatomic, assign) DirectionCommand currentDirection;
