@@ -24,6 +24,7 @@ typedef enum {
 @property (nonatomic, strong) CMMotionManager *motionManager;
 @property (nonatomic, strong) GCDAsyncSocket *socket;
 @property (nonatomic, assign) DirectionCommand currentDirection;
+@property (nonatomic, strong) NSOperationQueue *updateQueue;
 
 - (void)updateMotionData;
 - (void)updateLabelWithMotionDataWithRotationRate:(CMRotationRate)rotationRate andAttitude:(CMAttitude*)attitude;

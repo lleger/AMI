@@ -11,7 +11,7 @@
 
 NSString *const kSocketHost                   = @"192.168.1.99";
 int       const kSocketPort                   = 80;
-float     const kUpdateInterval               = 0.01;
+float     const kUpdateInterval               = 0.1;
 float     const kRotationThreshold            = 1.0;
 float     const kAttitudeRollForwardThreshold = 1.0;
 float     const kAttitudeRollReverseThreshold = 2.0;
@@ -29,6 +29,12 @@ float     const kAttitudePitchLeftThreshold   = 0.0;
     [super viewDidLoad];
     
     _motionManager = [MotionManager sharedManager];
+    
+    if (_updateQueue == nil) {
+        _updateQueue = [[NSOperationQueue alloc] init];
+        _updateQueue.name = @"UpdateQueue";
+        _updateQueue.maxConcurrentOperationCount = 1;
+    }
     
     _socket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
     NSError *err;
@@ -51,8 +57,15 @@ float     const kAttitudePitchLeftThreshold   = 0.0;
     [super viewWillAppear:animated];
 
     if ([_motionManager isDeviceMotionAvailable]) {
-        [_motionManager startDeviceMotionUpdates];
-        [NSTimer scheduledTimerWithTimeInterval:kUpdateInterval target:self selector:@selector(updateMotionData) userInfo:nil repeats:YES];
+        [_motionManager setDeviceMotionUpdateInterval:kUpdateInterval];
+        [_motionManager startDeviceMotionUpdatesToQueue:_updateQueue withHandler:^(CMDeviceMotion *motion, NSError *error) {
+            if (error) {
+                NSLog(@"Device motion update error: %@", error);
+            }
+            [_updateQueue addOperationWithBlock:^{
+                [self updateMotionData];
+            }];
+        }];
     }
 }
 
@@ -90,7 +103,8 @@ float     const kAttitudePitchLeftThreshold   = 0.0;
             break;
     }
     
-    _commandLabel.text = commandLabelText;
+//    _commandLabel.text = commandLabelText;
+    [_commandLabel performSelectorOnMainThread:@selector(setText:) withObject:commandLabelText waitUntilDone:YES];
     _currentDirection = command;
 }
 
@@ -164,20 +178,21 @@ float     const kAttitudePitchLeftThreshold   = 0.0;
 }
 
 - (void)updateLabelWithMotionDataWithRotationRate:(CMRotationRate)rotationRate andAttitude:(CMAttitude *)attitude   
-{    
-    _motionData.text = [NSString stringWithFormat:
-                       @"Roll: %f\n"
-                       @"Pitch: %f\n"
-                       @"Yaw: %f\n"
-                       @"Rot rate X: %f\n"
-                       @"Rot rate Y: %f\n"
-                       @"Rot rate Z: %f",
-                       attitude.roll,
-                       attitude.pitch,
-                       attitude.yaw,
-                       rotationRate.x,
-                       rotationRate.y,
-                       rotationRate.z];
+{
+    NSString *motionText = [NSString stringWithFormat:
+                           @"Roll: %f\n"
+                           @"Pitch: %f\n"
+                           @"Yaw: %f\n"
+                           @"Rot rate X: %f\n"
+                           @"Rot rate Y: %f\n"
+                           @"Rot rate Z: %f",
+                           attitude.roll,
+                           attitude.pitch,
+                           attitude.yaw,
+                           rotationRate.x,
+                           rotationRate.y,
+                           rotationRate.z];
+    [_motionData performSelectorOnMainThread:@selector(setText:) withObject:motionText waitUntilDone:YES];
 }
 
 @end
