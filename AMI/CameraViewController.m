@@ -9,14 +9,14 @@
 #import "CameraViewController.h"
 #import "MotionManager.h"
 
-NSString *const kSocketHost                   = @"192.168.1.99";
-int       const kSocketPort                   = 80;
-float     const kUpdateInterval               = 0.1;
-float     const kRotationThreshold            = 1.0;
-float     const kAttitudeRollForwardThreshold = 1.0;
-float     const kAttitudeRollReverseThreshold = 2.0;
-float     const kAttitudePitchRightThreshold  = -0.1;
-float     const kAttitudePitchLeftThreshold   = 0.0;
+static NSString *const kSocketHost                   = @"192.168.1.99";
+static int       const kSocketPort                   = 80;
+static float     const kUpdateInterval               = 0.1;
+static float     const kRotationThreshold            = 1.0;
+static float     const kAttitudeRollForwardThreshold = 1.0;
+static float     const kAttitudeRollReverseThreshold = 2.0;
+static float     const kAttitudePitchRightThreshold  = -0.1;
+static float     const kAttitudePitchLeftThreshold   = 0.0;
 
 @interface CameraViewController ()
 
