@@ -56,6 +56,15 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
 {
     [super viewWillAppear:animated];
 
+    NSError *err;
+    if (![_socket isConnected]) {
+        if (![_socket connectToHost:kSocketHost onPort:kSocketPort error:&err]) // Asynchronous!
+        {
+            // If there was an error, it's likely something like "already connected" or "no delegate set"
+            NSLog(@"Socket error: %@", err);
+        }
+    }
+    
     if ([_motionManager isDeviceMotionAvailable]) {
         [_motionManager setDeviceMotionUpdateInterval:kUpdateInterval];
         [_motionManager startDeviceMotionUpdatesToQueue:_updateQueue withHandler:^(CMDeviceMotion *motion, NSError *error) {
@@ -99,11 +108,14 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
             commandLabelText = @"Right";
             break;
             
+        case DirectionStop:
+            commandLabelText = @"Stop";
+            break;
+            
         default:
             break;
     }
     
-//    _commandLabel.text = commandLabelText;
     [_commandLabel performSelectorOnMainThread:@selector(setText:) withObject:commandLabelText waitUntilDone:YES];
     _currentDirection = command;
 }
@@ -118,7 +130,7 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
             break;
             
         case DirectionReverse:
-            commandString = @"R";
+            commandString = @"B";
             break;
             
         case DirectionLeft:
@@ -129,6 +141,9 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
             commandString = @"R";
             break;
             
+        case DirectionStop:
+            commandString = @"S";
+            
         default:
             break;
     }
@@ -137,7 +152,22 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
     
     NSLog(@"Send command to arduino: %@", commandString);
     
-    [_socket writeData:[[commandString stringByAppendingString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:1];
+    if ([_socket isConnected]) {
+        [_socket writeData:[commandString dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:command];
+    } else {
+        NSError *err;
+        if (![_socket connectToHost:kSocketHost onPort:kSocketPort error:&err]) // Asynchronous!
+        {
+            // If there was an error, it's likely something like "already connected" or "no delegate set"
+            NSLog(@"Socket error: %@", err);
+        }
+    }
+}
+
+- (IBAction)stopPressed:(id)sender
+{
+    [self changeDirection:DirectionStop];
+    [self sendCommandToArduino:DirectionStop];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port

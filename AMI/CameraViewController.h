@@ -14,7 +14,8 @@ typedef enum {
     DirectionForward = 0,
     DirectionReverse,
     DirectionRight,
-    DirectionLeft
+    DirectionLeft,
+    DirectionStop
 } DirectionCommand;
 
 @interface CameraViewController : UIViewController <GCDAsyncSocketDelegate>
@@ -30,5 +31,6 @@ typedef enum {
 - (void)updateLabelWithMotionDataWithRotationRate:(CMRotationRate)rotationRate andAttitude:(CMAttitude*)attitude;
 - (void)changeDirection:(DirectionCommand)command;
 - (void)sendCommandToArduino:(DirectionCommand)command;
+- (IBAction)stopPressed:(id)sender;
 
 @end
