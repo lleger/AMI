@@ -134,8 +134,6 @@
 		032ED8DB16D2CA1D00652D92 /* AMI */ = {
 			isa = PBXGroup;
 			children = (
-				030730D416EC06FA00B8F16B /* icon.png */,
-				030730D516EC06FA00B8F16B /* icon@2x.png */,
 				03847A7316D57F6700BD4A91 /* Services */,
 				03847A7216D57F5F00BD4A91 /* Controllers */,
 				032ED8E416D2CA1D00652D92 /* AppDelegate.h */,
@@ -156,6 +154,8 @@
 				032ED8E716D2CA1D00652D92 /* Default.png */,
 				032ED8E916D2CA1D00652D92 /* Default@2x.png */,
 				032ED8EB16D2CA1D00652D92 /* Default-568h@2x.png */,
+				030730D416EC06FA00B8F16B /* icon.png */,
+				030730D516EC06FA00B8F16B /* icon@2x.png */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
