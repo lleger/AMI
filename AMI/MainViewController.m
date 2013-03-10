@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Logan Leger. All rights reserved.
 //
 
-#import "CameraViewController.h"
+#import "MainViewController.h"
 #import "MotionManager.h"
 
 static NSString *const kSocketHost                   = @"192.168.1.99";
@@ -18,11 +18,11 @@ static float     const kAttitudeRollReverseThreshold = 2.0;
 static float     const kAttitudePitchRightThreshold  = -0.1;
 static float     const kAttitudePitchLeftThreshold   = 0.0;
 
-@interface CameraViewController ()
+@interface MainViewController ()
 
 @end
 
-@implementation CameraViewController
+@implementation MainViewController
 
 - (void)viewDidLoad
 {

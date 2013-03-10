@@ -18,7 +18,7 @@ typedef enum {
     DirectionStop
 } DirectionCommand;
 
-@interface CameraViewController : UIViewController <GCDAsyncSocketDelegate>
+@interface MainViewController : UIViewController <GCDAsyncSocketDelegate>
 
 @property (nonatomic, weak) IBOutlet UILabel *motionData;
 @property (nonatomic, weak) IBOutlet UILabel *commandLabel;
