@@ -65,6 +65,16 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
         }
     }
     
+    GCDAsyncSocket *listenSocket;
+    listenSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+    
+    NSError *error = nil;
+    if (![listenSocket acceptOnPort:9003 error:&error])
+    {
+        NSLog(@"I goofed: %@", error);
+    }
+
+    
     if ([_motionManager isDeviceMotionAvailable]) {
         [_motionManager setDeviceMotionUpdateInterval:kUpdateInterval];
         [_motionManager startDeviceMotionUpdatesToQueue:_updateQueue withHandler:^(CMDeviceMotion *motion, NSError *error) {
@@ -76,6 +86,29 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
             }];
         }];
     }
+}
+
+- (void)socket:(GCDAsyncSocket *)sender didAcceptNewSocket:(GCDAsyncSocket *)newSocket
+{
+    NSLog(@"New client connected %@:%hu", [newSocket connectedHost], [newSocket connectedPort]);
+    [newSocket readDataToData:[GCDAsyncSocket CRLFData] withTimeout:-1 tag:0];
+}
+
+//- (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err
+//{
+//    NSLog(@"Client disconnected");
+//}
+
+- (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
+{
+    NSData *strData = [data subdataWithRange:NSMakeRange(0, [data length] - 2)];
+    NSString *msg = [[NSString alloc] initWithData:strData encoding:NSUTF8StringEncoding];
+    NSArray *sensorData = [msg componentsSeparatedByString:@"|"];
+    NSLog(@"Data received from client %@:%hu: \n", [sock connectedHost], [sock connectedPort]);
+    NSLog(@"Status: %@ \n", sensorData[0] ? @"OK" : @"Error");
+    NSLog(@"Temperature: %i F \n", [sensorData[2] integerValue]);
+    NSLog(@"Humidity: %i", [sensorData[1] integerValue]);
+    [sock readDataToData:[GCDAsyncSocket CRLFData] withTimeout:-1 tag:0];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
