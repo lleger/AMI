@@ -184,6 +184,19 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		0371B2B616EDA4AC0030BB1A /* Motion */ = {
+			isa = PBXGroup;
+			children = (
+				03847A6F16D57B8F00BD4A91 /* MotionManager.h */,
+				03847A7016D57B8F00BD4A91 /* MotionManager.m */,
+				030730F716ED2D3400B8F16B /* MotionHandler.h */,
+				030730F816ED2D3400B8F16B /* MotionHandler.m */,
+				030730FA16ED306E00B8F16B /* MotionDelegate.h */,
+				030730FB16ED35B400B8F16B /* MotionDataSource.h */,
+			);
+			name = Motion;
+			sourceTree = "<group>";
+		};
 		03847A7216D57F5F00BD4A91 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -196,12 +209,7 @@
 		03847A7316D57F6700BD4A91 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				03847A6F16D57B8F00BD4A91 /* MotionManager.h */,
-				03847A7016D57B8F00BD4A91 /* MotionManager.m */,
-				030730F716ED2D3400B8F16B /* MotionHandler.h */,
-				030730F816ED2D3400B8F16B /* MotionHandler.m */,
-				030730FA16ED306E00B8F16B /* MotionDelegate.h */,
-				030730FB16ED35B400B8F16B /* MotionDataSource.h */,
+				0371B2B616EDA4AC0030BB1A /* Motion */,
 			);
 			name = Services;
 			sourceTree = "<group>";
