@@ -8,6 +8,7 @@
 
 #import "MainViewController.h"
 #import "MotionManager.h"
+#import "MotionHandler.h"
 
 static NSString *const kSocketHost                   = @"192.168.1.99";
 static int       const kSocketPort                   = 80;
@@ -27,15 +28,7 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    _motionManager = [MotionManager sharedManager];
-    
-    if (_updateQueue == nil) {
-        _updateQueue = [[NSOperationQueue alloc] init];
-        _updateQueue.name = @"UpdateQueue";
-        _updateQueue.maxConcurrentOperationCount = 1;
-    }
-    
+        
     _socket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
     NSError *err;
     if (![_socket connectToHost:kSocketHost onPort:kSocketPort error:&err]) // Asynchronous!
@@ -44,6 +37,17 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
         NSLog(@"Socket error: %@", err);
     }
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    MotionHandler *motionHandler = [[MotionHandler alloc] init];
+    _dataSource = motionHandler;
+    [motionHandler setDelegate:self];
+    
+//    FIXME:
+//    This NSLog is here because everything breaks without it.
+//    Yes, this is the most important NSLog EVER. I think it's
+//    a bug in ARC, or I'm missing something in my code, but
+//    I'll have to come back to this. For now, it's staying put.
+    NSLog(@"dataSource: %@", _dataSource);
 }
 
 - (void)didReceiveMemoryWarning
@@ -73,19 +77,8 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
     {
         NSLog(@"I goofed: %@", error);
     }
-
     
-    if ([_motionManager isDeviceMotionAvailable]) {
-        [_motionManager setDeviceMotionUpdateInterval:kUpdateInterval];
-        [_motionManager startDeviceMotionUpdatesToQueue:_updateQueue withHandler:^(CMDeviceMotion *motion, NSError *error) {
-            if (error) {
-                NSLog(@"Device motion update error: %@", error);
-            }
-            [_updateQueue addOperationWithBlock:^{
-                [self updateMotionData];
-            }];
-        }];
-    }
+    [_dataSource startUpdatingMotionData];
 }
 
 - (void)socket:(GCDAsyncSocket *)sender didAcceptNewSocket:(GCDAsyncSocket *)newSocket
@@ -115,12 +108,10 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
 {
     [super viewDidDisappear:animated];
     
-    if ([_motionManager isDeviceMotionActive]) {
-        [_motionManager stopDeviceMotionUpdates];
-    }
+    [_dataSource stopUpdatingMotionData];
 }
 
-- (void)changeDirection:(DirectionCommand)command
+- (void)changeDirection:(Direction)command
 {
     NSString *commandLabelText;
     
@@ -149,11 +140,11 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
             break;
     }
     
-    [_commandLabel performSelectorOnMainThread:@selector(setText:) withObject:commandLabelText waitUntilDone:YES];
-    _currentDirection = command;
+    [_commandLabel performSelectorOnMainThread:@selector(setText:)
+                                    withObject:commandLabelText waitUntilDone:YES];
 }
 
-- (void)sendCommandToArduino:(DirectionCommand)command
+- (void)sendCommandToArduino:(Direction)command
 {
     NSString *commandString;
     
@@ -218,44 +209,33 @@ static float     const kAttitudePitchLeftThreshold   = 0.0;
     NSLog(@"Did write data with tag: %li", tag);
 }
 
-- (void)updateMotionData
+#pragma mark -
+#pragma Motion delegate methods
+
+- (void)didUpdateDirection:(Direction)direction
 {
-    CMRotationRate rotationRate = _motionManager.deviceMotion.rotationRate;
-    CMAttitude *attitude = _motionManager.deviceMotion.attitude;
-    
-    if (rotationRate.y <= -kRotationThreshold && attitude.roll < kAttitudeRollForwardThreshold && _currentDirection != DirectionForward) {
-        [self changeDirection:DirectionForward];
-        [self sendCommandToArduino:DirectionForward];
-    } else if (rotationRate.y >= kRotationThreshold && attitude.roll > kAttitudeRollReverseThreshold && _currentDirection != DirectionReverse) {
-        [self changeDirection:DirectionReverse];
-        [self sendCommandToArduino:DirectionReverse];
-    } else if (rotationRate.z < kRotationThreshold && attitude.pitch < kAttitudePitchRightThreshold && _currentDirection != DirectionRight) {
-        [self changeDirection:DirectionRight];
-        [self sendCommandToArduino:DirectionRight];
-    } else if (rotationRate.z > kRotationThreshold && attitude.pitch > kAttitudePitchLeftThreshold && _currentDirection != DirectionLeft) {
-        [self changeDirection:DirectionLeft];
-        [self sendCommandToArduino:DirectionLeft];
-    }
-    
-    [self updateLabelWithMotionDataWithRotationRate:rotationRate andAttitude:attitude];
+    [self changeDirection:direction];
+    [self sendCommandToArduino:direction];
 }
 
-- (void)updateLabelWithMotionDataWithRotationRate:(CMRotationRate)rotationRate andAttitude:(CMAttitude *)attitude   
+- (void)didUpdateMotionWithRotationRate:(CMRotationRate)rotationRate
+                            andAttitude:(CMAttitude *)attitude
 {
     NSString *motionText = [NSString stringWithFormat:
-                           @"Roll: %f\n"
-                           @"Pitch: %f\n"
-                           @"Yaw: %f\n"
-                           @"Rot rate X: %f\n"
-                           @"Rot rate Y: %f\n"
-                           @"Rot rate Z: %f",
-                           attitude.roll,
-                           attitude.pitch,
-                           attitude.yaw,
-                           rotationRate.x,
-                           rotationRate.y,
-                           rotationRate.z];
-    [_motionData performSelectorOnMainThread:@selector(setText:) withObject:motionText waitUntilDone:YES];
+                            @"Roll: %f\n"
+                            @"Pitch: %f\n"
+                            @"Yaw: %f\n"
+                            @"Rot rate X: %f\n"
+                            @"Rot rate Y: %f\n"
+                            @"Rot rate Z: %f",
+                            attitude.roll,
+                            attitude.pitch,
+                            attitude.yaw,
+                            rotationRate.x,
+                            rotationRate.y,
+                            rotationRate.z];
+    [_motionData performSelectorOnMainThread:@selector(setText:)
+                                  withObject:motionText waitUntilDone:YES];
 }
 
 @end

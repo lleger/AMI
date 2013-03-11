@@ -9,28 +9,19 @@
 #import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
 #import "GCDAsyncSocket.h"
+#import "MotionDelegate.h"
+#import "MotionDataSource.h"
+#import "MotionHandler.h"
 
-typedef enum {
-    DirectionForward = 0,
-    DirectionReverse,
-    DirectionRight,
-    DirectionLeft,
-    DirectionStop
-} DirectionCommand;
-
-@interface MainViewController : UIViewController <GCDAsyncSocketDelegate>
+@interface MainViewController : UIViewController <GCDAsyncSocketDelegate, MotionDelegate>
 
 @property (nonatomic, weak) IBOutlet UILabel *motionData;
 @property (nonatomic, weak) IBOutlet UILabel *commandLabel;
-@property (nonatomic, strong) CMMotionManager *motionManager;
 @property (nonatomic, strong) GCDAsyncSocket *socket;
-@property (nonatomic, assign) DirectionCommand currentDirection;
-@property (nonatomic, strong) NSOperationQueue *updateQueue;
+@property (nonatomic, weak) id<MotionDataSource> dataSource;
 
-- (void)updateMotionData;
-- (void)updateLabelWithMotionDataWithRotationRate:(CMRotationRate)rotationRate andAttitude:(CMAttitude*)attitude;
-- (void)changeDirection:(DirectionCommand)command;
-- (void)sendCommandToArduino:(DirectionCommand)command;
+- (void)changeDirection:(Direction)command;
+- (void)sendCommandToArduino:(Direction)command;
 - (IBAction)stopPressed:(id)sender;
 
 @end

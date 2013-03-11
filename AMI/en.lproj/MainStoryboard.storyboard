@@ -70,6 +70,14 @@
         </scene>
     </scenes>
     <classes>
+        <class className="MainViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/MainViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="stopPressed:"/>
+                <relationship kind="outlet" name="commandLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="motionData" candidateClass="UILabel"/>
+            </relationships>
+        </class>
         <class className="NSLayoutConstraint" superclassName="NSObject">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
         </class>
