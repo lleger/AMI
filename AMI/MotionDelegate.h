@@ -7,14 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
-typedef enum {
-    DirectionForward = 0,
-    DirectionReverse,
-    DirectionRight,
-    DirectionLeft,
-    DirectionStop
-} Direction;
+#import "Direction.h"
 
 @protocol MotionDelegate <NSObject>
 

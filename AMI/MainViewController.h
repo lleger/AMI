@@ -8,20 +8,23 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
-#import "GCDAsyncSocket.h"
 #import "MotionDelegate.h"
 #import "MotionDataSource.h"
 #import "MotionHandler.h"
+#import "TransmitDelegate.h"
+#import "ArduinoTransmitHandler.h"
+#import "ReceiveDelegate.h"
+#import "ArduinoReceiveHandler.h"
 
-@interface MainViewController : UIViewController <GCDAsyncSocketDelegate, MotionDelegate>
+@interface MainViewController : UIViewController <MotionDelegate, ReceiveDelegate>
 
 @property (nonatomic, weak) IBOutlet UILabel *motionData;
 @property (nonatomic, weak) IBOutlet UILabel *commandLabel;
-@property (nonatomic, strong) GCDAsyncSocket *socket;
-@property (nonatomic, weak) id<MotionDataSource> dataSource;
+@property (nonatomic, weak) id<MotionDataSource> motionDataSource;
+@property (nonatomic, weak) id<TransmitDelegate> transmitDelegate;
+@property (nonatomic, weak) id<ReceiveDataSource> receiveDataSource;
 
-- (void)changeDirection:(Direction)command;
-- (void)sendCommandToArduino:(Direction)command;
+- (void)changeDirectionLabel:(Direction)command;
 - (IBAction)stopPressed:(id)sender;
 
 @end

@@ -10,6 +10,7 @@
 #import "MotionManager.h"
 #import "MotionDelegate.h"
 #import "MotionDataSource.h"
+#import "Direction.h"
 
 @interface MotionHandler : NSObject <MotionDataSource>
 

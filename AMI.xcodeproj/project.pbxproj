@@ -27,7 +27,9 @@
 		032ED90416D2CA1D00652D92 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 032ED90216D2CA1D00652D92 /* InfoPlist.strings */; };
 		032ED90716D2CA1D00652D92 /* AMITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 032ED90616D2CA1D00652D92 /* AMITests.m */; };
 		032ED91716D32F8900652D92 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 032ED91616D32F8900652D92 /* CoreMotion.framework */; };
+		0371B2BA16EE36400030BB1A /* ArduinoTransmitHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 0371B2B916EE36400030BB1A /* ArduinoTransmitHandler.m */; };
 		03847A7116D57B8F00BD4A91 /* MotionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 03847A7016D57B8F00BD4A91 /* MotionManager.m */; };
+		03F432D216EEA6B80097D840 /* ArduinoReceiveHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 03F432D116EEA6B80097D840 /* ArduinoReceiveHandler.m */; };
 		13EE62A4953947F2B21E80CF /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D7C7F365090455AB4A7E2C4 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -71,8 +73,16 @@
 		032ED90516D2CA1D00652D92 /* AMITests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AMITests.h; sourceTree = "<group>"; };
 		032ED90616D2CA1D00652D92 /* AMITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AMITests.m; sourceTree = "<group>"; };
 		032ED91616D32F8900652D92 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		0371B2B816EE36400030BB1A /* ArduinoTransmitHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArduinoTransmitHandler.h; sourceTree = "<group>"; };
+		0371B2B916EE36400030BB1A /* ArduinoTransmitHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArduinoTransmitHandler.m; sourceTree = "<group>"; };
+		0371B2BB16EE36780030BB1A /* TransmitDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TransmitDelegate.h; sourceTree = "<group>"; };
 		03847A6F16D57B8F00BD4A91 /* MotionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MotionManager.h; sourceTree = "<group>"; };
 		03847A7016D57B8F00BD4A91 /* MotionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MotionManager.m; sourceTree = "<group>"; };
+		03F432CD16EE9C830097D840 /* Direction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Direction.h; sourceTree = "<group>"; };
+		03F432CF16EEA63D0097D840 /* ReceiveDataSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReceiveDataSource.h; sourceTree = "<group>"; };
+		03F432D016EEA6B80097D840 /* ArduinoReceiveHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArduinoReceiveHandler.h; sourceTree = "<group>"; };
+		03F432D116EEA6B80097D840 /* ArduinoReceiveHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArduinoReceiveHandler.m; sourceTree = "<group>"; };
+		03F432D416EEADEA0097D840 /* ReceiveDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReceiveDelegate.h; sourceTree = "<group>"; };
 		4126FB05DAB04DBCA77F7E2E /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		7D7C7F365090455AB4A7E2C4 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -145,6 +155,7 @@
 				032ED8E516D2CA1D00652D92 /* AppDelegate.m */,
 				032ED8ED16D2CA1D00652D92 /* MainStoryboard.storyboard */,
 				032ED8DC16D2CA1D00652D92 /* Supporting Files */,
+				03F432CD16EE9C830097D840 /* Direction.h */,
 			);
 			path = AMI;
 			sourceTree = "<group>";
@@ -197,6 +208,16 @@
 			name = Motion;
 			sourceTree = "<group>";
 		};
+		0371B2B716EE362A0030BB1A /* Transmit */ = {
+			isa = PBXGroup;
+			children = (
+				0371B2B816EE36400030BB1A /* ArduinoTransmitHandler.h */,
+				0371B2B916EE36400030BB1A /* ArduinoTransmitHandler.m */,
+				0371B2BB16EE36780030BB1A /* TransmitDelegate.h */,
+			);
+			name = Transmit;
+			sourceTree = "<group>";
+		};
 		03847A7216D57F5F00BD4A91 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -209,9 +230,22 @@
 		03847A7316D57F6700BD4A91 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				03F432CE16EEA6080097D840 /* Receive */,
+				0371B2B716EE362A0030BB1A /* Transmit */,
 				0371B2B616EDA4AC0030BB1A /* Motion */,
 			);
 			name = Services;
+			sourceTree = "<group>";
+		};
+		03F432CE16EEA6080097D840 /* Receive */ = {
+			isa = PBXGroup;
+			children = (
+				03F432D016EEA6B80097D840 /* ArduinoReceiveHandler.h */,
+				03F432D116EEA6B80097D840 /* ArduinoReceiveHandler.m */,
+				03F432CF16EEA63D0097D840 /* ReceiveDataSource.h */,
+				03F432D416EEADEA0097D840 /* ReceiveDelegate.h */,
+			);
+			name = Receive;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -376,6 +410,8 @@
 				032ED8F216D2CA1D00652D92 /* MainViewController.m in Sources */,
 				03847A7116D57B8F00BD4A91 /* MotionManager.m in Sources */,
 				030730F916ED2D3400B8F16B /* MotionHandler.m in Sources */,
+				0371B2BA16EE36400030BB1A /* ArduinoTransmitHandler.m in Sources */,
+				03F432D216EEA6B80097D840 /* ArduinoReceiveHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
