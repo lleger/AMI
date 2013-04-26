@@ -7,8 +7,6 @@
 //
 
 #import "MainViewController.h"
-#import "MotionManager.h"
-#import "MotionHandler.h"
 
 @interface MainViewController ()
 
@@ -20,23 +18,20 @@
 {
     [super viewDidLoad];
     
-    ArduinoTransmitHandler *transmitHandler = [[ArduinoTransmitHandler alloc] init];
-    _transmitDelegate = transmitHandler;
+    _cameraLayer = [[CALayer alloc] init];
+    _cameraLayer.frame = CGRectMake(192.f, 257.f, 640.f, 480.f);
+    [self.view.layer addSublayer:_cameraLayer];
     
-    ArduinoReceiveHandler *receiveHandler = [[ArduinoReceiveHandler alloc] init];
-    _receiveDataSource = receiveHandler;
-    [receiveHandler setDelegate:self];
+    _transmitDelegate = [[ArduinoTransmitHandler alloc] init];
     
-    MotionHandler *motionHandler = [[MotionHandler alloc] init];
-    _motionDataSource = motionHandler;
-    [motionHandler setDelegate:self];
+    _receiveDataSource = [[ArduinoReceiveHandler alloc] init];
+    [_receiveDataSource setDelegate:self];
     
-//    FIXME:
-//    This NSLog is here because everything breaks without it.
-//    Yes, this is the most important NSLog EVER. I think it's
-//    a bug in ARC, or I'm missing something in my code, but
-//    I'll have to come back to this. For now, it's staying put.
-    NSLog(@"dataSource: %@", _motionDataSource);
+    _motionDataSource = [[MotionHandler alloc] init];
+    [_motionDataSource setDelegate:self];
+    
+    _cameraDataSource = [[CameraHandler alloc] init];
+    [_cameraDataSource setDelegate:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -48,6 +43,8 @@
     [_receiveDataSource startListening];
 
     [_motionDataSource startUpdatingMotionData];
+    
+    [_cameraDataSource startStreaming];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -59,6 +56,8 @@
     [_receiveDataSource stopListening];
     
     [_motionDataSource stopUpdatingMotionData];
+    
+    [_cameraDataSource stopStreaming];
 }
 
 #pragma mark -
@@ -141,6 +140,26 @@
                             rotationRate.z];
     [_motionData performSelectorOnMainThread:@selector(setText:)
                                   withObject:motionText waitUntilDone:YES];
+}
+
+#pragma mark -
+#pragma mark Camera delegate methods
+
+- (void)didReceiveCameraData:(NSData *)cameraData
+{
+    [_cameraLayer.sublayers makeObjectsPerformSelector:@selector(removeFromSuperlayer)];
+    CALayer *frameLayer = [CALayer layer];
+    frameLayer.frame = _cameraLayer.bounds;
+    CFDataRef frameData = CFDataCreate(NULL, [cameraData bytes], [cameraData length]);
+    CGDataProviderRef imgDataProvider;
+    CGImageRef cameraFrame;
+    imgDataProvider = CGDataProviderCreateWithCFData(frameData);
+    CFRelease(frameData);
+    cameraFrame = CGImageCreateWithJPEGDataProvider(imgDataProvider, NULL, true, kCGRenderingIntentDefault);
+    CGDataProviderRelease(imgDataProvider);
+    [frameLayer setContents:(__bridge id)(cameraFrame)];
+    [_cameraLayer addSublayer:frameLayer];
+    CGImageRelease(cameraFrame);
 }
 
 @end

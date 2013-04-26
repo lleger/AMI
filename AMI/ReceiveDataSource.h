@@ -7,10 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ReceiveDelegate.h"
 
 @protocol ReceiveDataSource <NSObject>
 
 - (void)startListening;
 - (void)stopListening;
+- (void)setDelegate:(id<ReceiveDelegate>)delegate;
 
 @end
