@@ -1,13 +1,13 @@
 PODS:
   - AFNetworking (1.2.1)
-  - CocoaAsyncSocket (0.0.1)
+  - CocoaAsyncSocket (7.3.1)
 
 DEPENDENCIES:
   - AFNetworking (~> 1.2)
-  - CocoaAsyncSocket (~> 0.0.1)
+  - CocoaAsyncSocket (~> 7.3.1)
 
 SPEC CHECKSUMS:
   AFNetworking: 616da0028916ce296f5c3cef74e5552eb4e10e13
-  CocoaAsyncSocket: 73c96a4225998adad0c94142010f65e5d12077de
+  CocoaAsyncSocket: 6e59036ecae1e93d6c78f5766149983ceac558ba
 
 COCOAPODS: 0.18.1
