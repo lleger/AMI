@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
 #import <QuartzCore/QuartzCore.h>
+#import "SVProgressHud.h"
 #import "MotionDelegate.h"
 #import "MotionDataSource.h"
 #import "MotionHandler.h"
@@ -24,6 +25,11 @@
 
 @property (nonatomic, weak) IBOutlet UILabel *motionData;
 @property (nonatomic, weak) IBOutlet UILabel *commandLabel;
+@property (nonatomic, weak) IBOutlet UIView *sensorsView;
+@property (nonatomic, weak) IBOutlet UILabel *tempLabel;
+@property (nonatomic, weak) IBOutlet UILabel *humidityLabel;
+@property (nonatomic, weak) IBOutlet UIButton *powerButton;
+@property (nonatomic, weak) IBOutlet UIButton *stopButton;
 @property (nonatomic, strong) id<MotionDataSource> motionDataSource;
 @property (nonatomic, strong) id<TransmitDelegate> transmitDelegate;
 @property (nonatomic, strong) id<ReceiveDataSource> receiveDataSource;
@@ -32,5 +38,8 @@
 
 - (void)changeDirectionLabel:(Direction)command;
 - (IBAction)stopPressed:(id)sender;
+- (IBAction)powerPressed:(id)sender;
+- (IBAction)powerLongPressed:(id)sender;
+- (void)setSensorsText:(NSDictionary *)sensorText;
 
 @end

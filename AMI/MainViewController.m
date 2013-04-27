@@ -8,6 +8,8 @@
 
 #import "MainViewController.h"
 
+static const float kPowerProgressHudUpdateInterval = 0.83f;
+
 @interface MainViewController ()
 
 @end
@@ -18,9 +20,38 @@
 {
     [super viewDidLoad];
     
-    _cameraLayer = [[CALayer alloc] init];
-    _cameraLayer.frame = CGRectMake(192.f, 257.f, 640.f, 480.f);
-    [self.view.layer addSublayer:_cameraLayer];
+//    _cameraLayer = [[CALayer alloc] init];
+//    _cameraLayer.frame = CGRectMake(0, 0, 1024.f, 748.f);
+//    _cameraLayer.backgroundColor = [UIColor yellowColor].CGColor;
+//    _cameraLayer.borderColor = [UIColor redColor].CGColor;
+//    _cameraLayer.borderWidth = 2.f;
+//    [self.view.layer addSublayer:_cameraLayer];
+        
+    CGRect sensorsViewFrame = CGRectMake(0, 0, 105.f, 30.f);
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:sensorsViewFrame
+                                                   byRoundingCorners:UIRectCornerBottomRight
+                                                         cornerRadii:CGSizeMake(5.f, 5.f)];
+    CAShapeLayer *maskLayer = [CAShapeLayer layer];
+    maskLayer.frame = sensorsViewFrame;
+    maskLayer.path = maskPath.CGPath;
+    _sensorsView.layer.mask = maskLayer;
+    
+    [self setSensorsText:@{@"temp": @"--",
+                           @"humidity": @"--"}];
+    
+    _powerButton.layer.borderColor = [UIColor colorWithWhite:0.141 alpha:1.000].CGColor;
+    _powerButton.layer.borderWidth = 1.f;
+    _powerButton.layer.cornerRadius = 25.f;
+    
+    _stopButton.layer.borderColor = [UIColor colorWithRed:0.867 green:0.013 blue:0.022 alpha:1.000].CGColor;
+    _stopButton.layer.borderWidth = 1.f;
+    _stopButton.layer.cornerRadius = 25.f;
+    
+    UILongPressGestureRecognizer *powerLongPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] init];
+    powerLongPressGestureRecognizer.minimumPressDuration = 2.f;
+    powerLongPressGestureRecognizer.allowableMovement = 50.f;
+    [powerLongPressGestureRecognizer addTarget:self action:@selector(powerLongPressed:)];
+    [_powerButton addGestureRecognizer:powerLongPressGestureRecognizer];
     
     _transmitDelegate = [[ArduinoTransmitHandler alloc] init];
     
@@ -38,26 +69,26 @@
 {
     [super viewWillAppear:animated];
 
-    [_transmitDelegate connectToArduino];
+//    [_transmitDelegate connectToArduino];
 
-    [_receiveDataSource startListening];
+//    [_receiveDataSource startListening];
 
-    [_motionDataSource startUpdatingMotionData];
+//    [_motionDataSource startUpdatingMotionData];
     
-    [_cameraDataSource startStreaming];
+//    [_cameraDataSource startStreaming];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
     
-    [_transmitDelegate disconnectFromArduino];
+//    [_transmitDelegate disconnectFromArduino];
     
-    [_receiveDataSource stopListening];
+//    [_receiveDataSource stopListening];
     
-    [_motionDataSource stopUpdatingMotionData];
+//    [_motionDataSource stopUpdatingMotionData];
     
-    [_cameraDataSource stopStreaming];
+//    [_cameraDataSource stopStreaming];
 }
 
 #pragma mark -
@@ -100,6 +131,26 @@
 {
     [self changeDirectionLabel:DirectionStop];
     [_transmitDelegate writeDirectionCommand:DirectionStop];
+}
+
+- (void)powerPressed:(id)sender
+{
+    [SVProgressHUD showErrorWithStatus:@"Hold for 2 seconds to power down"];
+}
+
+- (void)powerLongPressed:(id)sender
+{
+    UILongPressGestureRecognizer *gestureRecognizer = (UILongPressGestureRecognizer *)sender;
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+        [SVProgressHUD showWithStatus:@"Powering down" maskType:SVProgressHUDMaskTypeGradient];
+        [NSTimer scheduledTimerWithTimeInterval:1.5f target:[SVProgressHUD class] selector:@selector(dismiss) userInfo:nil repeats:NO];
+    }
+}
+
+- (void)setSensorsText:(NSDictionary *)sensorText
+{
+    _tempLabel.text = [NSString stringWithFormat:@"%@°", [sensorText objectForKey:@"temp"]];
+    _humidityLabel.text = [NSString stringWithFormat:@"%@°", [sensorText objectForKey:@"humidity"]];
 }
 
 #pragma mark -

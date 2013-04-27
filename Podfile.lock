@@ -1,13 +1,16 @@
 PODS:
   - AFNetworking (1.2.1)
   - CocoaAsyncSocket (7.3.1)
+  - SVProgressHUD (0.9)
 
 DEPENDENCIES:
   - AFNetworking (~> 1.2)
   - CocoaAsyncSocket (~> 7.3.1)
+  - SVProgressHUD (~> 0.9)
 
 SPEC CHECKSUMS:
   AFNetworking: 616da0028916ce296f5c3cef74e5552eb4e10e13
   CocoaAsyncSocket: 6e59036ecae1e93d6c78f5766149983ceac558ba
+  SVProgressHUD: 03d4845ec8e64591726428a08236c6a5489d45f8
 
 COCOAPODS: 0.18.1
