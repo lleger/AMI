@@ -8,8 +8,6 @@
 
 #import "MainViewController.h"
 
-static const float kPowerProgressHudUpdateInterval = 0.83f;
-
 @interface MainViewController ()
 
 @end
@@ -20,13 +18,13 @@ static const float kPowerProgressHudUpdateInterval = 0.83f;
 {
     [super viewDidLoad];
     
-//    _cameraLayer = [[CALayer alloc] init];
-//    _cameraLayer.frame = CGRectMake(0, 0, 1024.f, 748.f);
-//    _cameraLayer.backgroundColor = [UIColor yellowColor].CGColor;
-//    _cameraLayer.borderColor = [UIColor redColor].CGColor;
-//    _cameraLayer.borderWidth = 2.f;
-//    [self.view.layer addSublayer:_cameraLayer];
-        
+    _cameraLayer = [[CALayer alloc] init];
+    _cameraLayer.frame = CGRectMake(0, 0, 1024.f, 748.f);
+    _cameraLayer.backgroundColor = [UIColor yellowColor].CGColor;
+    _cameraLayer.borderColor = [UIColor redColor].CGColor;
+    _cameraLayer.borderWidth = 2.f;
+    [self.view.layer insertSublayer:_cameraLayer atIndex:0];
+    
     CGRect sensorsViewFrame = CGRectMake(0, 0, 105.f, 30.f);
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:sensorsViewFrame
                                                    byRoundingCorners:UIRectCornerBottomRight
@@ -42,10 +40,12 @@ static const float kPowerProgressHudUpdateInterval = 0.83f;
     _powerButton.layer.borderColor = [UIColor colorWithWhite:0.141 alpha:1.000].CGColor;
     _powerButton.layer.borderWidth = 1.f;
     _powerButton.layer.cornerRadius = 25.f;
+    _powerButton.backgroundColor = [UIColor whiteColor];
     
     _stopButton.layer.borderColor = [UIColor colorWithRed:0.867 green:0.013 blue:0.022 alpha:1.000].CGColor;
     _stopButton.layer.borderWidth = 1.f;
     _stopButton.layer.cornerRadius = 25.f;
+    _stopButton.backgroundColor = [UIColor whiteColor];
     
     UILongPressGestureRecognizer *powerLongPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] init];
     powerLongPressGestureRecognizer.minimumPressDuration = 2.f;
