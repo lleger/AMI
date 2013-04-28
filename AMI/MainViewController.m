@@ -7,6 +7,13 @@
 //
 
 #import "MainViewController.h"
+#import "NSTimer+Blocks.h"
+#import "UIColor+AMITheme.h"
+
+#define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * M_PI)
+
+static NSString *const kPowerArcAnimationKey = @"strokeEnd";
+static float const kButtonRadius = 37.5f;
 
 @interface MainViewController ()
 
@@ -20,10 +27,11 @@
     
     _cameraLayer = [[CALayer alloc] init];
     _cameraLayer.frame = CGRectMake(0, 0, 1024.f, 748.f);
-    _cameraLayer.backgroundColor = [UIColor yellowColor].CGColor;
-    _cameraLayer.borderColor = [UIColor redColor].CGColor;
-    _cameraLayer.borderWidth = 2.f;
     [self.view.layer insertSublayer:_cameraLayer atIndex:0];
+    
+    _gradientLayer = [[CALayer alloc] init];
+    _gradientLayer.frame = CGRectMake(0, 0, 1024.f, 748.f);
+    [self.view.layer insertSublayer:_gradientLayer above:_cameraLayer];
     
     CGRect sensorsViewFrame = CGRectMake(0, 0, 105.f, 30.f);
     UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:sensorsViewFrame
@@ -34,24 +42,33 @@
     maskLayer.path = maskPath.CGPath;
     _sensorsView.layer.mask = maskLayer;
     
-    [self setSensorsText:@{@"temp": @"--",
-                           @"humidity": @"--"}];
+    [self setSensorsText:@{@"temp": @"100",
+                           @"humidity": @"95"}];
+        
+    for (UIButton *button in @[_powerButton, _stopButton, _bladeButton]) {
+        button.layer.borderColor = [UIColor AMIGreyColor].CGColor;
+        button.layer.borderWidth = 1.f;
+        button.layer.cornerRadius = kButtonRadius;
+        button.backgroundColor = [UIColor whiteColor];
+    }
     
-    _powerButton.layer.borderColor = [UIColor colorWithWhite:0.141 alpha:1.000].CGColor;
-    _powerButton.layer.borderWidth = 1.f;
-    _powerButton.layer.cornerRadius = 25.f;
-    _powerButton.backgroundColor = [UIColor whiteColor];
-    
-    _stopButton.layer.borderColor = [UIColor colorWithRed:0.867 green:0.013 blue:0.022 alpha:1.000].CGColor;
-    _stopButton.layer.borderWidth = 1.f;
-    _stopButton.layer.cornerRadius = 25.f;
-    _stopButton.backgroundColor = [UIColor whiteColor];
+//    _powerButton.layer.borderColor = [UIColor AMIGreyColor].CGColor;
+//    _powerButton.layer.borderWidth = 1.f;
+//    _powerButton.layer.cornerRadius = kButtonRadius;
+//    _powerButton.backgroundColor = [UIColor whiteColor];
+//    
+//    _stopButton.layer.borderColor = [UIColor AMIGreyColor].CGColor;
+//    _stopButton.layer.borderWidth = 1.f;
+//    _stopButton.layer.cornerRadius = kButtonRadius;
+//    _stopButton.backgroundColor = [UIColor whiteColor];
     
     UILongPressGestureRecognizer *powerLongPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] init];
-    powerLongPressGestureRecognizer.minimumPressDuration = 2.f;
+    powerLongPressGestureRecognizer.minimumPressDuration = 0.1f;
     powerLongPressGestureRecognizer.allowableMovement = 50.f;
     [powerLongPressGestureRecognizer addTarget:self action:@selector(powerLongPressed:)];
     [_powerButton addGestureRecognizer:powerLongPressGestureRecognizer];
+    
+    [self showDirectionWarning:DirectionLeft animated:YES];
     
     _transmitDelegate = [[ArduinoTransmitHandler alloc] init];
     
@@ -75,12 +92,14 @@
 
 //    [_motionDataSource startUpdatingMotionData];
     
-//    [_cameraDataSource startStreaming];
+    [_cameraDataSource startStreaming];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
+    
+    // TODO power down motor
     
 //    [_transmitDelegate disconnectFromArduino];
     
@@ -88,7 +107,7 @@
     
 //    [_motionDataSource stopUpdatingMotionData];
     
-//    [_cameraDataSource stopStreaming];
+    [_cameraDataSource stopStreaming];
 }
 
 #pragma mark -
@@ -133,24 +152,147 @@
     [_transmitDelegate writeDirectionCommand:DirectionStop];
 }
 
-- (void)powerPressed:(id)sender
+- (IBAction)bladePressed:(id)sender
 {
-    [SVProgressHUD showErrorWithStatus:@"Hold for 2 seconds to power down"];
+    // TODO stop blade
+}
+
+- (IBAction)powerPressed:(id)sender
+{
+    [SVProgressHUD showErrorWithStatus:@"Hold down for 2 seconds to power"];
 }
 
 - (void)powerLongPressed:(id)sender
 {
     UILongPressGestureRecognizer *gestureRecognizer = (UILongPressGestureRecognizer *)sender;
+
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        [SVProgressHUD showWithStatus:@"Powering down" maskType:SVProgressHUDMaskTypeGradient];
-        [NSTimer scheduledTimerWithTimeInterval:1.5f target:[SVProgressHUD class] selector:@selector(dismiss) userInfo:nil repeats:NO];
+        UIBezierPath *powerButtonArcPath = [UIBezierPath bezierPathWithArcCenter:CGPointMake(kButtonRadius, kButtonRadius)
+                                                                          radius:(kButtonRadius + 4.f)
+                                                                      startAngle:DEGREES_TO_RADIANS(270.f)
+                                                                        endAngle:DEGREES_TO_RADIANS(-90.f)
+                                                                       clockwise:YES];
+        _powerButtonArcLayer = [CAShapeLayer layer];
+        _powerButtonArcLayer.path = powerButtonArcPath.CGPath;
+        _powerButtonArcLayer.strokeColor = [UIColor AMIGreyColor].CGColor;
+        _powerButtonArcLayer.fillColor = nil;
+        _powerButtonArcLayer.lineWidth = 8.5f;
+        _powerButtonArcLayer.lineJoin = kCALineJoinRound;
+        CABasicAnimation *pathAnimation = [CABasicAnimation animationWithKeyPath:kPowerArcAnimationKey];
+        pathAnimation.duration = 2.0f;
+        pathAnimation.fromValue = @(0.f);
+        pathAnimation.toValue = @(1.f);
+        pathAnimation.removedOnCompletion = YES;
+        CABasicAnimation *fadePath = [CABasicAnimation animationWithKeyPath:@"opacity"];
+        fadePath.duration = 0.2f;
+        fadePath.fromValue = @(0.f);
+        fadePath.toValue = @(1.f);
+        fadePath.removedOnCompletion = YES;
+        fadePath.fillMode = kCAFillModeBoth;
+        [_powerButtonArcLayer addAnimation:fadePath forKey:@"opacity"];
+        [_powerButtonArcLayer addAnimation:pathAnimation forKey:kPowerArcAnimationKey];
+        [_powerButton.layer addSublayer:_powerButtonArcLayer];
+        
+        _powerButtonDelayTimer = [NSTimer scheduledTimerWithTimeInterval:2.f block:^{
+            [UIView animateWithDuration:0.25f animations:^{
+                _powerButton.layer.transform = CATransform3DScale(CATransform3DIdentity, 1.25f, 1.25f, 1.25f);
+            } completion:^(BOOL finished) {
+                [UIView animateWithDuration:0.15f animations:^{
+                    _powerButton.layer.transform = CATransform3DScale(CATransform3DIdentity, 1.f, 1.f, 1.f);
+                }];
+            }];
+            
+            [_powerButtonArcLayer removeFromSuperlayer];
+        } repeats:NO];
+    } else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        [CATransaction begin]; {
+            [CATransaction setCompletionBlock:^{
+                [_powerButtonArcLayer removeAllAnimations];
+                [_powerButtonArcLayer removeFromSuperlayer];
+                [_powerButtonDelayTimer invalidate];
+            }];
+            CABasicAnimation *fadePath = [CABasicAnimation animationWithKeyPath:@"opacity"];
+            fadePath.duration = 0.5f;
+            fadePath.fromValue = @(1.f);
+            fadePath.toValue = @(0.f);
+            fadePath.removedOnCompletion = YES;
+            fadePath.fillMode = kCAFillModeRemoved;
+            [_powerButtonArcLayer addAnimation:fadePath forKey:@"opacity"];
+        } [CATransaction commit];
     }
 }
 
 - (void)setSensorsText:(NSDictionary *)sensorText
 {
     _tempLabel.text = [NSString stringWithFormat:@"%@°", [sensorText objectForKey:@"temp"]];
-    _humidityLabel.text = [NSString stringWithFormat:@"%@°", [sensorText objectForKey:@"humidity"]];
+    _humidityLabel.text = [NSString stringWithFormat:@"%@%%", [sensorText objectForKey:@"humidity"]];
+}
+
+- (void)showDirectionWarning:(Direction)direction animated:(BOOL)animated
+{    
+    CGSize viewSize = CGSizeMake(1024.f, 748.f);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+
+    UIGraphicsBeginImageContextWithOptions(viewSize, NO, 0.0);
+    [_gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
+
+    CGFloat locations[] = { 0.0f, 1.0f };
+    NSArray *gradientColors = [NSArray arrayWithObjects:
+                               (id)[UIColor AMIRedColor].CGColor,
+                               (id)[UIColor clearColor].CGColor, nil];
+    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)gradientColors, locations);
+    
+    CGContextRef currentContext = UIGraphicsGetCurrentContext();
+    CGContextDrawRadialGradient(currentContext, gradient,
+                                CGPointMake(-144.98, 374), 141.94,
+                                CGPointMake(-254.16, 374), 446.17,
+                                kCGGradientDrawsBeforeStartLocation |
+                                kCGGradientDrawsAfterEndLocation);
+    CGGradientRelease(gradient);
+    CGColorSpaceRelease(colorSpace);
+
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    [_gradientLayer setContents:(id)image.CGImage];
+    
+    if (animated) {
+        CABasicAnimation *fadeGradientAnimation = [CABasicAnimation animationWithKeyPath:@"transform"];
+        fadeGradientAnimation.duration = 1.25f;
+        fadeGradientAnimation.fromValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
+        fadeGradientAnimation.toValue = [NSValue valueWithCATransform3D:
+                          CATransform3DMakeScale(1.1f, 1.1f, 1.25f)];
+        fadeGradientAnimation.autoreverses = YES;
+        fadeGradientAnimation.repeatCount = HUGE_VALF;
+        [_gradientLayer addAnimation:fadeGradientAnimation forKey:@"transform"];
+    }
+}
+
+- (void)addRadialGradientToBackground
+{
+    CGSize viewSize = CGSizeMake(748.f, 1024.f);
+    
+    UIGraphicsBeginImageContextWithOptions(viewSize, NO, 0.0);
+    [_gradientLayer renderInContext:UIGraphicsGetCurrentContext()];
+    
+    size_t locationsCount = 2;
+    CGFloat locations[2] = {0.0f, 1.0f};
+    CGFloat colors[8] = {0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.75f};
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGGradientRef gradient = CGGradientCreateWithColorComponents(colorSpace, colors, locations, locationsCount);
+    CGColorSpaceRelease(colorSpace);
+    
+    CGContextRef currentContext = UIGraphicsGetCurrentContext();
+    
+    CGPoint center = CGPointMake(viewSize.width/2, viewSize.height/2);
+    float radius = MIN(viewSize.width, viewSize.height);
+    CGContextDrawRadialGradient(currentContext, gradient, center, 0, center, radius, kCGGradientDrawsAfterEndLocation);
+    CGGradientRelease(gradient);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    [_gradientLayer setContents:(id)image.CGImage];
 }
 
 #pragma mark -
@@ -209,6 +351,7 @@
     cameraFrame = CGImageCreateWithJPEGDataProvider(imgDataProvider, NULL, true, kCGRenderingIntentDefault);
     CGDataProviderRelease(imgDataProvider);
     [frameLayer setContents:(__bridge id)(cameraFrame)];
+    [frameLayer setAffineTransform:CGAffineTransformMakeScale(1.0, -1.0)];
     [_cameraLayer addSublayer:frameLayer];
     CGImageRelease(cameraFrame);
 }

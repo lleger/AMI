@@ -35,6 +35,9 @@
 		03BFFEB1172BA1060023DDE2 /* power@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BFFEAF172BA1060023DDE2 /* power@2x.png */; };
 		03BFFEB4172BC1380023DDE2 /* stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BFFEB2172BC1380023DDE2 /* stop.png */; };
 		03BFFEB5172BC1380023DDE2 /* stop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BFFEB3172BC1380023DDE2 /* stop@2x.png */; };
+		03BFFEB8172D98890023DDE2 /* UIColor+AMITheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 03BFFEB7172D98890023DDE2 /* UIColor+AMITheme.m */; };
+		03BFFEBC172DD4E50023DDE2 /* blade.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BFFEBA172DD4E40023DDE2 /* blade.png */; };
+		03BFFEBD172DD4E50023DDE2 /* blade@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BFFEBB172DD4E50023DDE2 /* blade@2x.png */; };
 		03F432D216EEA6B80097D840 /* ArduinoReceiveHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 03F432D116EEA6B80097D840 /* ArduinoReceiveHandler.m */; };
 		13EE62A4953947F2B21E80CF /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D7C7F365090455AB4A7E2C4 /* libPods.a */; };
 /* End PBXBuildFile section */
@@ -93,6 +96,10 @@
 		03BFFEAF172BA1060023DDE2 /* power@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "power@2x.png"; sourceTree = "<group>"; };
 		03BFFEB2172BC1380023DDE2 /* stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = stop.png; sourceTree = "<group>"; };
 		03BFFEB3172BC1380023DDE2 /* stop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stop@2x.png"; sourceTree = "<group>"; };
+		03BFFEB6172D98890023DDE2 /* UIColor+AMITheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+AMITheme.h"; sourceTree = "<group>"; };
+		03BFFEB7172D98890023DDE2 /* UIColor+AMITheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+AMITheme.m"; sourceTree = "<group>"; };
+		03BFFEBA172DD4E40023DDE2 /* blade.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blade.png; sourceTree = "<group>"; };
+		03BFFEBB172DD4E50023DDE2 /* blade@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blade@2x.png"; sourceTree = "<group>"; };
 		03F432CD16EE9C830097D840 /* Direction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Direction.h; sourceTree = "<group>"; };
 		03F432CF16EEA63D0097D840 /* ReceiveDataSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReceiveDataSource.h; sourceTree = "<group>"; };
 		03F432D016EEA6B80097D840 /* ArduinoReceiveHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArduinoReceiveHandler.h; sourceTree = "<group>"; };
@@ -166,6 +173,7 @@
 		032ED8DB16D2CA1D00652D92 /* AMI */ = {
 			isa = PBXGroup;
 			children = (
+				03BFFEB9172DC9420023DDE2 /* Categories */,
 				03BFFEAD172BA0FD0023DDE2 /* Images */,
 				03847A7316D57F6700BD4A91 /* Services */,
 				03847A7216D57F5F00BD4A91 /* Controllers */,
@@ -270,12 +278,23 @@
 		03BFFEAD172BA0FD0023DDE2 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				03BFFEBA172DD4E40023DDE2 /* blade.png */,
+				03BFFEBB172DD4E50023DDE2 /* blade@2x.png */,
 				03BFFEB2172BC1380023DDE2 /* stop.png */,
 				03BFFEB3172BC1380023DDE2 /* stop@2x.png */,
 				03BFFEAE172BA1060023DDE2 /* power.png */,
 				03BFFEAF172BA1060023DDE2 /* power@2x.png */,
 			);
 			name = Images;
+			sourceTree = "<group>";
+		};
+		03BFFEB9172DC9420023DDE2 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				03BFFEB6172D98890023DDE2 /* UIColor+AMITheme.h */,
+				03BFFEB7172D98890023DDE2 /* UIColor+AMITheme.m */,
+			);
+			name = Categories;
 			sourceTree = "<group>";
 		};
 		03F432CE16EEA6080097D840 /* Receive */ = {
@@ -372,6 +391,8 @@
 				03BFFEB1172BA1060023DDE2 /* power@2x.png in Resources */,
 				03BFFEB4172BC1380023DDE2 /* stop.png in Resources */,
 				03BFFEB5172BC1380023DDE2 /* stop@2x.png in Resources */,
+				03BFFEBC172DD4E50023DDE2 /* blade.png in Resources */,
+				03BFFEBD172DD4E50023DDE2 /* blade@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,6 +449,7 @@
 				0371B2BA16EE36400030BB1A /* ArduinoTransmitHandler.m in Sources */,
 				03F432D216EEA6B80097D840 /* ArduinoReceiveHandler.m in Sources */,
 				0392C5DE172757F800431E07 /* CameraHandler.m in Sources */,
+				03BFFEB8172D98890023DDE2 /* UIColor+AMITheme.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

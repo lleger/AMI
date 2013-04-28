@@ -29,17 +29,24 @@
 @property (nonatomic, weak) IBOutlet UILabel *tempLabel;
 @property (nonatomic, weak) IBOutlet UILabel *humidityLabel;
 @property (nonatomic, weak) IBOutlet UIButton *powerButton;
+@property (nonatomic, strong) NSTimer *powerButtonDelayTimer;
+@property (nonatomic, strong) CAShapeLayer *powerButtonArcLayer;
 @property (nonatomic, weak) IBOutlet UIButton *stopButton;
+@property (nonatomic, weak) IBOutlet UIButton *bladeButton;
 @property (nonatomic, strong) id<MotionDataSource> motionDataSource;
 @property (nonatomic, strong) id<TransmitDelegate> transmitDelegate;
 @property (nonatomic, strong) id<ReceiveDataSource> receiveDataSource;
 @property (nonatomic, strong) id<CameraDataSource> cameraDataSource;
 @property (nonatomic, strong) CALayer *cameraLayer;
+@property (nonatomic, strong) CALayer *gradientLayer;
 
 - (void)changeDirectionLabel:(Direction)command;
-- (IBAction)stopPressed:(id)sender;
 - (IBAction)powerPressed:(id)sender;
-- (IBAction)powerLongPressed:(id)sender;
+- (void)powerLongPressed:(id)sender;
+- (IBAction)stopPressed:(id)sender;
+- (IBAction)bladePressed:(id)sender;
 - (void)setSensorsText:(NSDictionary *)sensorText;
+- (void)showDirectionWarning:(Direction)direction animated:(BOOL)animated;
+- (void)addRadialGradientToBackground;
 
 @end
