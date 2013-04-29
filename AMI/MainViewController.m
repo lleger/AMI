@@ -42,8 +42,8 @@ static float const kButtonRadius = 37.5f;
     maskLayer.path = maskPath.CGPath;
     _sensorsView.layer.mask = maskLayer;
     
-    [self setSensorsText:@{@"temp": @"100",
-                           @"humidity": @"95"}];
+    [self setSensorsText:@{@"temp": @"--",
+                           @"humidity": @"--"}];
         
     for (UIButton *button in @[_powerButton, _stopButton, _bladeButton]) {
         button.layer.borderColor = [UIColor AMIGreyColor].CGColor;
@@ -58,7 +58,8 @@ static float const kButtonRadius = 37.5f;
     [powerLongPressGestureRecognizer addTarget:self action:@selector(powerLongPressed:)];
     [_powerButton addGestureRecognizer:powerLongPressGestureRecognizer];
     
-    [self showDirectionWarning:DirectionLeft animated:YES];
+    // TODO dynamic
+    [self showDirectionWarning:DirectionRight animated:YES];
     
     _transmitDelegate = [[ArduinoTransmitHandler alloc] init];
     
@@ -76,11 +77,11 @@ static float const kButtonRadius = 37.5f;
 {
     [super viewWillAppear:animated];
 
-//    [_transmitDelegate connectToArduino];
+    [_transmitDelegate connectToArduino];
 
-//    [_receiveDataSource startListening];
+    [_receiveDataSource startListening];
 
-//    [_motionDataSource startUpdatingMotionData];
+    [_motionDataSource startUpdatingMotionData];
     
     [_cameraDataSource startStreaming];
 }
@@ -89,13 +90,13 @@ static float const kButtonRadius = 37.5f;
 {
     [super viewDidDisappear:animated];
     
-//    [_transmitDelegate writePowerCommand];
+    [_transmitDelegate writePowerCommand];
     
-//    [_transmitDelegate disconnectFromArduino];
+    [_transmitDelegate disconnectFromArduino];
     
-//    [_receiveDataSource stopListening];
+    [_receiveDataSource stopListening];
     
-//    [_motionDataSource stopUpdatingMotionData];
+    [_motionDataSource stopUpdatingMotionData];
     
     [_cameraDataSource stopStreaming];
 }
@@ -138,13 +139,29 @@ static float const kButtonRadius = 37.5f;
 
 - (IBAction)stopPressed:(id)sender
 {
-    [self changeDirectionLabel:DirectionStop];
-    [_transmitDelegate writeDirectionCommand:DirectionStop];
+    [UIView animateWithDuration:0.25f animations:^{
+        _stopButton.layer.transform = CATransform3DScale(CATransform3DIdentity, 1.25f, 1.25f, 1.25f);
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.15f animations:^{
+            _stopButton.layer.transform = CATransform3DScale(CATransform3DIdentity, 1.f, 1.f, 1.f);
+        } completion:^(BOOL finished1) {
+            [self changeDirectionLabel:DirectionStop];
+            [_transmitDelegate writeDirectionCommand:DirectionStop];
+        }];
+    }];
 }
 
 - (IBAction)bladePressed:(id)sender
 {
-    [_transmitDelegate writeBladeCommand];
+    [UIView animateWithDuration:0.25f animations:^{
+        _bladeButton.layer.transform = CATransform3DScale(CATransform3DIdentity, 1.25f, 1.25f, 1.25f);
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.15f animations:^{
+            _bladeButton.layer.transform = CATransform3DScale(CATransform3DIdentity, 1.f, 1.f, 1.f);
+        } completion:^(BOOL finished1) {
+            [_transmitDelegate writeBladeCommand];
+        }];
+    }];
 }
 
 - (IBAction)powerPressed:(id)sender
@@ -164,7 +181,7 @@ static float const kButtonRadius = 37.5f;
                                                                        clockwise:YES];
         _powerButtonArcLayer = [CAShapeLayer layer];
         _powerButtonArcLayer.path = powerButtonArcPath.CGPath;
-        _powerButtonArcLayer.strokeColor = [UIColor AMIGreyColor].CGColor;
+        _powerButtonArcLayer.strokeColor = [UIColor AMIRedColor].CGColor;
         _powerButtonArcLayer.fillColor = nil;
         _powerButtonArcLayer.lineWidth = 8.5f;
         _powerButtonArcLayer.lineJoin = kCALineJoinRound;
@@ -172,12 +189,12 @@ static float const kButtonRadius = 37.5f;
         pathAnimation.duration = 2.0f;
         pathAnimation.fromValue = @(0.f);
         pathAnimation.toValue = @(1.f);
-        pathAnimation.removedOnCompletion = YES;
+        pathAnimation.removedOnCompletion = NO;
         CABasicAnimation *fadePath = [CABasicAnimation animationWithKeyPath:@"opacity"];
         fadePath.duration = 0.2f;
         fadePath.fromValue = @(0.f);
         fadePath.toValue = @(1.f);
-        fadePath.removedOnCompletion = YES;
+        fadePath.removedOnCompletion = NO;
         fadePath.fillMode = kCAFillModeBoth;
         [_powerButtonArcLayer addAnimation:fadePath forKey:@"opacity"];
         [_powerButtonArcLayer addAnimation:pathAnimation forKey:kPowerArcAnimationKey];
@@ -207,8 +224,8 @@ static float const kButtonRadius = 37.5f;
             fadePath.duration = 0.5f;
             fadePath.fromValue = @(1.f);
             fadePath.toValue = @(0.f);
-            fadePath.removedOnCompletion = YES;
-            fadePath.fillMode = kCAFillModeRemoved;
+            fadePath.removedOnCompletion = NO;
+            fadePath.fillMode = kCAFillModeForwards;
             [_powerButtonArcLayer addAnimation:fadePath forKey:@"opacity"];
         } [CATransaction commit];
     }
@@ -216,6 +233,7 @@ static float const kButtonRadius = 37.5f;
 
 - (void)setSensorsText:(NSDictionary *)sensorText
 {
+    // TODO this is really slow
     _tempLabel.text = [NSString stringWithFormat:@"%@°", [sensorText objectForKey:@"temp"]];
     _humidityLabel.text = [NSString stringWithFormat:@"%@%%", [sensorText objectForKey:@"humidity"]];
 }
@@ -292,10 +310,14 @@ static float const kButtonRadius = 37.5f;
 
 - (void)didReceiveSensorData:(NSArray *)sensorData
 {
-     NSLog(@"Data received\n");
-     NSLog(@"Status: %@ \n", sensorData[0] ? @"OK" : @"Error");
-     NSLog(@"Temperature: %i F \n", [sensorData[2] integerValue]);
-     NSLog(@"Humidity: %i", [sensorData[1] integerValue]);
+    NSLog(@"sensorData = %@", sensorData);
+    
+    if ([sensorData[0] integerValue] != 1) {
+        NSLog(@"[MainViewController] Error from Arduino in receiving sensor data status = %@", sensorData[0]);
+    } else {
+        [self setSensorsText:@{@"temp": sensorData[2],
+                               @"humidity": sensorData[1]}];
+    }
 }
 
 #pragma mark -

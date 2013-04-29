@@ -8,7 +8,7 @@
 
 #import "ArduinoTransmitHandler.h"
 
-static NSString *const kSocketHost      = @"192.168.1.99";
+static NSString *const kSocketHost      = @"192.168.1.145";
 static int       const kSocketPort      = 80;
 static long      const kPowerCommandTag = 16;
 static NSString *const kPowerCommand    = @"O";
