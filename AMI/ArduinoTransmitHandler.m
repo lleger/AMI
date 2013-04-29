@@ -8,8 +8,12 @@
 
 #import "ArduinoTransmitHandler.h"
 
-static NSString *const kSocketHost = @"192.168.1.99";
-static int       const kSocketPort = 80;
+static NSString *const kSocketHost      = @"192.168.1.99";
+static int       const kSocketPort      = 80;
+static long      const kPowerCommandTag = 16;
+static NSString *const kPowerCommand    = @"O";
+static long      const kBladeCommandTag = 31;
+static NSString *const kBladeCommand    = @"C";
 
 @implementation ArduinoTransmitHandler
 
@@ -72,10 +76,24 @@ static int       const kSocketPort = 80;
             break;
     }
     
-    commandString = [commandString stringByAppendingString:@"\n"];
+    [self writeCommand:commandString withTag:command];
+}
+
+- (void)writePowerCommand
+{
+    [self writeCommand:kPowerCommand withTag:kPowerCommandTag];
+}
+
+- (void)writeBladeCommand
+{
+    [self writeCommand:kBladeCommand withTag:kBladeCommandTag];
+}
+
+- (void)writeCommand:(NSString *)command withTag:(long)tag
+{
     if ([_socket isConnected]) {
-        [_socket writeData:[commandString dataUsingEncoding:NSUTF8StringEncoding]
-               withTimeout:-1 tag:command];
+        [_socket writeData:[[command stringByAppendingString:@"\n"] dataUsingEncoding:NSUTF8StringEncoding]
+               withTimeout:-1 tag:tag];
     } else {
         [self connectToArduino];
     }

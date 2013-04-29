@@ -14,5 +14,7 @@
 - (void)connectToArduino;
 - (void)disconnectFromArduino;
 - (void)writeDirectionCommand:(Direction)command;
+- (void)writePowerCommand;
+- (void)writeBladeCommand;
 
 @end

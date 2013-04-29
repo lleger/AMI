@@ -15,4 +15,6 @@
 @property (nonatomic, strong) GCDAsyncSocket *socket;
 @property (nonatomic, strong) dispatch_queue_t transmitQueue;
 
+- (void)writeCommand:(NSString *)command withTag:(long)tag;
+
 @end

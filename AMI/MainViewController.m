@@ -51,17 +51,7 @@ static float const kButtonRadius = 37.5f;
         button.layer.cornerRadius = kButtonRadius;
         button.backgroundColor = [UIColor whiteColor];
     }
-    
-//    _powerButton.layer.borderColor = [UIColor AMIGreyColor].CGColor;
-//    _powerButton.layer.borderWidth = 1.f;
-//    _powerButton.layer.cornerRadius = kButtonRadius;
-//    _powerButton.backgroundColor = [UIColor whiteColor];
-//    
-//    _stopButton.layer.borderColor = [UIColor AMIGreyColor].CGColor;
-//    _stopButton.layer.borderWidth = 1.f;
-//    _stopButton.layer.cornerRadius = kButtonRadius;
-//    _stopButton.backgroundColor = [UIColor whiteColor];
-    
+        
     UILongPressGestureRecognizer *powerLongPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] init];
     powerLongPressGestureRecognizer.minimumPressDuration = 0.1f;
     powerLongPressGestureRecognizer.allowableMovement = 50.f;
@@ -99,7 +89,7 @@ static float const kButtonRadius = 37.5f;
 {
     [super viewDidDisappear:animated];
     
-    // TODO power down motor
+//    [_transmitDelegate writePowerCommand];
     
 //    [_transmitDelegate disconnectFromArduino];
     
@@ -154,7 +144,7 @@ static float const kButtonRadius = 37.5f;
 
 - (IBAction)bladePressed:(id)sender
 {
-    // TODO stop blade
+    [_transmitDelegate writeBladeCommand];
 }
 
 - (IBAction)powerPressed:(id)sender
@@ -199,6 +189,8 @@ static float const kButtonRadius = 37.5f;
             } completion:^(BOOL finished) {
                 [UIView animateWithDuration:0.15f animations:^{
                     _powerButton.layer.transform = CATransform3DScale(CATransform3DIdentity, 1.f, 1.f, 1.f);
+                } completion:^(BOOL finished1) {
+                    [_transmitDelegate writePowerCommand];
                 }];
             }];
             
