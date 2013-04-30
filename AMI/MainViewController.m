@@ -58,7 +58,6 @@ static float const kButtonRadius = 37.5f;
     [powerLongPressGestureRecognizer addTarget:self action:@selector(powerLongPressed:)];
     [_powerButton addGestureRecognizer:powerLongPressGestureRecognizer];
     
-    // TODO dynamic
     [self showDirectionWarning:DirectionRight animated:YES];
     
     _transmitDelegate = [[ArduinoTransmitHandler alloc] init];
@@ -252,10 +251,40 @@ static float const kButtonRadius = 37.5f;
                                (id)[UIColor clearColor].CGColor, nil];
     CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)gradientColors, locations);
     
+    CGPoint startPoint;
+    CGPoint endPoint;
+    
+    switch (direction) {
+        case DirectionLeft:
+            startPoint = CGPointMake(-144.98, 374);
+            endPoint = CGPointMake(-254.16, 374);
+            break;
+            
+        case DirectionRight:
+            startPoint = CGPointMake(1168.98, 374);
+            endPoint = CGPointMake(1278.16, 374);
+            break;
+            
+        case DirectionForward:
+            startPoint = CGPointMake(499, -145.98);
+            endPoint = CGPointMake(499, -254.56);
+            break;
+            
+        case DirectionReverse:
+            startPoint = CGPointMake(499, 893.98);
+            endPoint = CGPointMake(499, 1002.56);
+            break;
+            
+        default:
+            startPoint = CGPointMake(-144.98, 374);
+            endPoint = CGPointMake(-254.16, 374);
+            break;
+    }
+    
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
     CGContextDrawRadialGradient(currentContext, gradient,
-                                CGPointMake(-144.98, 374), 141.94,
-                                CGPointMake(-254.16, 374), 446.17,
+                                startPoint, 141.94,
+                                endPoint, 446.17,
                                 kCGGradientDrawsBeforeStartLocation |
                                 kCGGradientDrawsAfterEndLocation);
     CGGradientRelease(gradient);
@@ -365,7 +394,6 @@ static float const kButtonRadius = 37.5f;
     cameraFrame = CGImageCreateWithJPEGDataProvider(imgDataProvider, NULL, true, kCGRenderingIntentDefault);
     CGDataProviderRelease(imgDataProvider);
     [frameLayer setContents:(__bridge id)(cameraFrame)];
-    [frameLayer setAffineTransform:CGAffineTransformMakeScale(1.0, -1.0)];
     [_cameraLayer addSublayer:frameLayer];
     CGImageRelease(cameraFrame);
 }
