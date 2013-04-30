@@ -8,8 +8,7 @@
 
 #import "CameraHandler.h"
 
-//static NSString *const kCameraUrl = @"http://192.168.1.50:80/snapshot.cgi?user=admin&pwd=";
-static NSString *const kCameraUrl = @"http://192.168.1.126/PictureCatch.cgi?username=admin&password=admin&channel=1";
+static NSString *const kCameraUrl = @"http://192.168.1.126:81/snapshot.cgi?user=admin&pwd=&resolution=32";
 
 @implementation CameraHandler
 
